@@ -29,7 +29,7 @@ A simple API service for managing Spark clusters in Kubernetes for JupyterHub us
 
 2. Install dependencies:
    ```
-   pip install -r requirements.txt
+   uv sync --locked # only the first time or when uv.lock changes
    ```
 
 ## Local Unit Testing
@@ -53,4 +53,6 @@ PYTHONPATH=src pytest -v --cov=src --cov-report=xml tests
 ## Kubernetes Deployment
 
 For instructions on deploying to local Kubernetes, see the [Kubernetes README](kubernetes/README.md).
+
+> **Note:** The Docker image installs dependencies using `pyproject.toml` for modern Python packaging best practices. For local development, you can use either `requirements.txt` or `pyproject.toml` as shown above.
 

@@ -40,6 +40,9 @@ class KubeSparkManager:
         "POSTGRES_PASSWORD": "PostgreSQL password",
         "POSTGRES_DB": "PostgreSQL database name",
         "POSTGRES_URL": "PostgreSQL connection URL",
+        "REDIS_HOST": "Redis host",
+        "REDIS_PORT": "Redis port",
+        "DELTALAKE_WAREHOUSE_DIR": "Delta Lake warehouse directory (S3 bucket)",
     }
 
     # Template files
@@ -210,6 +213,9 @@ class KubeSparkManager:
             "POSTGRES_PASSWORD": os.environ["POSTGRES_PASSWORD"],
             "POSTGRES_DB": os.environ["POSTGRES_DB"],
             "POSTGRES_URL": os.environ["POSTGRES_URL"],
+            "REDIS_HOST": os.environ["REDIS_HOST"],
+            "REDIS_PORT": os.environ["REDIS_PORT"],
+            "DELTALAKE_WAREHOUSE_DIR": os.environ["DELTALAKE_WAREHOUSE_DIR"],
         }
 
         deployment = render_yaml_template(
@@ -268,6 +274,9 @@ class KubeSparkManager:
             "POSTGRES_PASSWORD": os.environ["POSTGRES_PASSWORD"],
             "POSTGRES_DB": os.environ["POSTGRES_DB"],
             "POSTGRES_URL": os.environ["POSTGRES_URL"],
+            "REDIS_HOST": os.environ["REDIS_HOST"],
+            "REDIS_PORT": os.environ["REDIS_PORT"],
+            "DELTALAKE_WAREHOUSE_DIR": os.environ["DELTALAKE_WAREHOUSE_DIR"],
         }
 
         deployment = render_yaml_template(
