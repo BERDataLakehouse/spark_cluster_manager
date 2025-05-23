@@ -16,6 +16,9 @@ spec:
     - port: {{ MASTER_WEBUI_PORT|int }}
       targetPort: {{ MASTER_WEBUI_PORT|int }}
       name: webui
+    - port: 80
+      targetPort: {{ MASTER_WEBUI_PORT|int }}
+      name: proxyui
   selector:
     app: spark
     component: master
