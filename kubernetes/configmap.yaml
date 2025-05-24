@@ -17,3 +17,5 @@ data:
   DELTALAKE_WAREHOUSE_DIR: "s3a://cdm-lake/warehouse"
   KBASE_ADMIN_ROLES: "CDM_JUPYTERHUB_ADMIN"
   KBASE_AUTH_URL: "https://ci.kbase.us/services/auth/"
+  WORKER_NODE_SELECTOR_VALUES: ""
+  MASTER_NODE_SELECTOR_VALUES: ""

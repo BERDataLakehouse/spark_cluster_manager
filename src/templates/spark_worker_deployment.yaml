@@ -24,6 +24,19 @@ spec:
         user: {{ USERNAME }}
         cluster-id: {{ CLUSTER_ID }}
     spec:
+      {% if WORKER_NODE_SELECTOR_VALUES and WORKER_NODE_SELECTOR_VALUES.strip() %}
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: kubernetes.io/hostname
+                    operator: In
+                    values:
+                      {% for node in WORKER_NODE_SELECTOR_VALUES.split(',') if node.strip() %}
+                      - {{ node.strip() }}
+                      {% endfor %}
+      {% endif %}
       containers:
         - name: spark-worker
           image: {{ IMAGE }}
