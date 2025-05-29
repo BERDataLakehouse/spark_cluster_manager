@@ -17,5 +17,6 @@ data:
   DELTALAKE_WAREHOUSE_DIR: "s3a://cdm-lake/warehouse"
   KBASE_ADMIN_ROLES: "CDM_JUPYTERHUB_ADMIN"
   KBASE_AUTH_URL: "https://ci.kbase.us/services/auth/"
+  # comma separated list of values for the worker node selector, e.g. "prodb-compute01, prodb-compute02"
   WORKER_NODE_SELECTOR_VALUES: ""
   MASTER_NODE_SELECTOR_VALUES: ""
