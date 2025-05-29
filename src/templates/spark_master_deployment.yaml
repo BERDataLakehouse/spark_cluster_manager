@@ -25,6 +25,19 @@ spec:
         cluster-id: {{ CLUSTER_ID }}
     spec:
       hostname: spark-master-{{ USERNAME_LOWER }}
+      {% if MASTER_NODE_SELECTOR_VALUES and MASTER_NODE_SELECTOR_VALUES.strip() %}
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: kubernetes.io/hostname
+                    operator: In
+                    values:
+                      {% for node in MASTER_NODE_SELECTOR_VALUES.split(',') if node.strip() %}
+                      - {{ node.strip() }}
+                      {% endfor %}
+      {% endif %}
       containers:
         - name: spark-master
           image: {{ IMAGE }}
