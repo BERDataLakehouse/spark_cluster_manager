@@ -20,3 +20,8 @@ data:
   # comma separated list of values for the node selector values, e.g. "prodb-compute01, prodb-compute02"
   WORKER_NODE_SELECTOR_VALUES: ""
   MASTER_NODE_SELECTOR_VALUES: ""
+  DEFAULT_WORKER_COUNT: "4"
+  DEFAULT_WORKER_CORES: "1"
+  DEFAULT_WORKER_MEMORY: "50GiB"
+  DEFAULT_MASTER_CORES: "1"
+  DEFAULT_MASTER_MEMORY: "50GiB"

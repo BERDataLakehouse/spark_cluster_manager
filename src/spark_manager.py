@@ -62,11 +62,11 @@ class KubeSparkManager:
     MASTER_SERVICE_TEMPLATE = str(TEMPLATES_DIR / MASTER_SERVICE_TEMPLATE_FILE)
 
     # Default configuration values for cluster settings
-    DEFAULT_WORKER_COUNT = 2
-    DEFAULT_WORKER_CORES = 10
-    DEFAULT_WORKER_MEMORY = "10G"
-    DEFAULT_MASTER_CORES = 10
-    DEFAULT_MASTER_MEMORY = "10G"
+    DEFAULT_WORKER_COUNT = int(os.environ.get("DEFAULT_WORKER_COUNT", "4"))
+    DEFAULT_WORKER_CORES = int(os.environ.get("DEFAULT_WORKER_CORES", "1"))
+    DEFAULT_WORKER_MEMORY = os.environ.get("DEFAULT_WORKER_MEMORY", "50GiB")
+    DEFAULT_MASTER_CORES = int(os.environ.get("DEFAULT_MASTER_CORES", "1"))
+    DEFAULT_MASTER_MEMORY = os.environ.get("DEFAULT_MASTER_MEMORY", "50GiB")
 
     DEFAULT_IMAGE_PULL_POLICY = os.environ.get(
         "SPARK_IMAGE_PULL_POLICY", "IfNotPresent"
