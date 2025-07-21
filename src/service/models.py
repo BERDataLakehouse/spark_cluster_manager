@@ -2,6 +2,7 @@
 Pydantic models for the Spark Manager API.
 """
 
+import os
 from typing import Annotated
 
 from pydantic import BaseModel, ByteSize, Field
@@ -14,11 +15,11 @@ MAX_WORKER_COUNT = 25
 MAX_WORKER_CORES = 64
 MAX_MASTER_CORES = 64
 
-DEFAULT_WORKER_COUNT = 2
-DEFAULT_WORKER_CORES = 10
-DEFAULT_WORKER_MEMORY = "10GiB"
-DEFAULT_MASTER_CORES = 10
-DEFAULT_MASTER_MEMORY = "10GiB"
+DEFAULT_WORKER_COUNT = int(os.environ.get("DEFAULT_WORKER_COUNT", "4"))
+DEFAULT_WORKER_CORES = int(os.environ.get("DEFAULT_WORKER_CORES", "1"))
+DEFAULT_WORKER_MEMORY = os.environ.get("DEFAULT_WORKER_MEMORY", "50GiB")
+DEFAULT_MASTER_CORES = int(os.environ.get("DEFAULT_MASTER_CORES", "1"))
+DEFAULT_MASTER_MEMORY = os.environ.get("DEFAULT_MASTER_MEMORY", "50GiB")
 
 
 class SparkClusterConfig(BaseModel):
