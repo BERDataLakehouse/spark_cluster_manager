@@ -24,6 +24,7 @@ spec:
         user: {{ USERNAME }}
         cluster-id: {{ CLUSTER_ID }}
     spec:
+      enableServiceLinks: False
       {% if WORKER_NODE_SELECTOR_VALUES and WORKER_NODE_SELECTOR_VALUES.strip() %}
       affinity:
         nodeAffinity:
@@ -40,18 +41,19 @@ spec:
       containers:
         - name: spark-worker
           image: {{ IMAGE }}
-          imagePullPolicy: {{ IMAGE_PULL_POLICY }}
+          imagePullPolicy: Always
+
           env:
             - name: SPARK_MODE
               value: worker
             - name: SPARK_MASTER_URL
               value: spark://{{ MASTER_NAME }}.{{ NAMESPACE }}:{{ MASTER_PORT }}
             - name: SPARK_WORKER_CORES
-              value: {{ WORKER_CORES }}
+              value: {{ SPARK_WORKER_CORES }}
             - name: SPARK_WORKER_MEMORY
-              value: {{ WORKER_MEMORY }}
+              value: {{ SPARK_WORKER_MEMORY }}
             - name: SPARK_WORKER_WEBUI_PORT
-              value: {{ WORKER_WEBUI_PORT }}
+              value: {{ SPARK_WORKER_WEBUI_PORT }}
             - name: POSTGRES_USER
               value: {{ POSTGRES_USER }}
             - name: POSTGRES_PASSWORD
@@ -61,15 +63,15 @@ spec:
             - name: POSTGRES_URL
               value: {{ POSTGRES_URL }}
             - name: BERDL_REDIS_HOST
-              value: {{ REDIS_HOST }}
+              value: {{ BERDL_REDIS_HOST }}
             - name: BERDL_REDIS_PORT
-              value: {{ REDIS_PORT }}
+              value: {{ BERDL_REDIS_PORT }}
             - name: BERDL_DELTALAKE_WAREHOUSE_PATH
-              value: {{ DELTALAKE_WAREHOUSE_DIR }}
+              value: {{ BERDL_DELTALAKE_WAREHOUSE_PATH }}
             - name: SPARK_WORKER_PORT
               value: {{ SPARK_WORKER_PORT }}
             - name: BERDL_HIVE_METASTORE_URI
-              value: {{ HIVE_METASTORE_URI }}
+              value: {{ BERDL_HIVE_METASTORE_URI }}
 
 # TODO MATCH THESE WITH SPARK_WORKER_MEMORY AND SPARK_WORKER_CORES? I COULD BE WRONG ABOUT THIS
 #          resources:

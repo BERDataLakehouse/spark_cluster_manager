@@ -24,6 +24,7 @@ spec:
         user: {{ USERNAME }}
         cluster-id: {{ CLUSTER_ID }}
     spec:
+      enableServiceLinks: False
       hostname: spark-master-{{ USERNAME_LOWER }}
       {% if MASTER_NODE_SELECTOR_VALUES and MASTER_NODE_SELECTOR_VALUES.strip() %}
       affinity:
@@ -41,21 +42,21 @@ spec:
       containers:
         - name: spark-master
           image: {{ IMAGE }}
-          imagePullPolicy: {{ IMAGE_PULL_POLICY }}
+          imagePullPolicy: Always
           ports:
-            - containerPort: {{ MASTER_PORT }}
+            - containerPort: {{ SPARK_MASTER_PORT }}
               name: master-comm
               protocol: TCP
-            - containerPort: {{ MASTER_WEBUI_PORT }}
+            - containerPort: {{ SPARK_MASTER_WEBUI_PORT }}
               name: master-ui
               protocol: TCP
           env:
             - name: SPARK_MODE
               value: master
             - name: SPARK_MASTER_PORT
-              value: {{ MASTER_PORT }}
+              value: {{ SPARK_MASTER_PORT }}
             - name: SPARK_MASTER_WEBUI_PORT
-              value: {{ MASTER_WEBUI_PORT }}
+              value: {{ SPARK_MASTER_WEBUI_PORT }}
             - name: SPARK_MASTER_HOST
               value: {{ SPARK_MASTER_HOST }}
 
