@@ -18,7 +18,7 @@ spec:
       name: webui
       #TODO REMOVE THIS IN FAVOR OF JUPYTER SERVICE PROXY
     - port: 80
-      targetPort: {{ MASTER_WEBUI_PORT|int }}
+      targetPort: {{ SPARK_MASTER_WEBUI_PORT|int }}
       name: proxyui
   selector:
     app: spark

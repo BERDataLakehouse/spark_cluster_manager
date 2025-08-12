@@ -58,7 +58,7 @@ spec:
             - name: SPARK_MASTER_WEBUI_PORT
               value: {{ SPARK_MASTER_WEBUI_PORT }}
             - name: SPARK_MASTER_HOST
-              value: {{ SPARK_MASTER_HOST }}
+              value: spark-master-{{ USERNAME_LOWER }}
 
 
 # These should match SPARK_MASTER_CORES and SPARK_MASTER_MEMORY, and also be set as env vars, to let spark itself

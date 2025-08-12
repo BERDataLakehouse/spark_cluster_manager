@@ -53,20 +53,20 @@ spec:
               value: {{ SPARK_WORKER_MEMORY }}
             - name: SPARK_WORKER_WEBUI_PORT
               value: {{ SPARK_WORKER_WEBUI_PORT }}
-            - name: POSTGRES_USER
-              value: {{ POSTGRES_USER }}
-            - name: POSTGRES_PASSWORD
-              value: {{ POSTGRES_PASSWORD }}
-            - name: POSTGRES_DB
-              value: {{ POSTGRES_DB }}
-            - name: POSTGRES_URL
-              value: {{ POSTGRES_URL }}
+            - name: BERDL_POSTGRES_USER
+              value: {{ BERDL_POSTGRES_USER }}
+            - name: BERDL_POSTGRES_PASSWORD
+              value: {{ BERDL_POSTGRES_PASSWORD }}
+            - name: BERDL_POSTGRES_DB
+              value: {{ BERDL_POSTGRES_DB }}
+            - name: BERDL_POSTGRES_URL
+              value: {{ BERDL_POSTGRES_URL }}
             - name: BERDL_REDIS_HOST
               value: {{ BERDL_REDIS_HOST }}
             - name: BERDL_REDIS_PORT
               value: {{ BERDL_REDIS_PORT }}
-            - name: BERDL_DELTALAKE_WAREHOUSE_PATH
-              value: {{ BERDL_DELTALAKE_WAREHOUSE_PATH }}
+            - name: BERDL_DELTALAKE_WAREHOUSE_DIRECTORY_PATH
+              value: {{ BERDL_DELTALAKE_WAREHOUSE_DIRECTORY_PATH }}
             - name: SPARK_WORKER_PORT
               value: {{ SPARK_WORKER_PORT }}
             - name: BERDL_HIVE_METASTORE_URI
