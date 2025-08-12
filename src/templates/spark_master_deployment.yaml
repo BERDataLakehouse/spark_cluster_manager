@@ -42,7 +42,7 @@ spec:
       containers:
         - name: spark-master
           image: {{ IMAGE }}
-          imagePullPolicy: Always
+          imagePullPolicy: {{ IMAGE_PULL_POLICY }}
           ports:
             - containerPort: {{ SPARK_MASTER_PORT }}
               name: master-comm

@@ -41,8 +41,7 @@ spec:
       containers:
         - name: spark-worker
           image: {{ IMAGE }}
-          imagePullPolicy: Always
-
+          imagePullPolicy: {{ IMAGE_PULL_POLICY }}
           env:
             - name: SPARK_MODE
               value: worker
