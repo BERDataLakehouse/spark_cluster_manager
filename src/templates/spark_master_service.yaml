@@ -10,12 +10,13 @@ metadata:
     cluster-id: {{ CLUSTER_ID }}
 spec:
   ports:
-    - port: {{ MASTER_PORT|int }}
-      targetPort: {{ MASTER_PORT|int }}
+    - port: {{ SPARK_MASTER_PORT|int }}
+      targetPort: {{ SPARK_MASTER_PORT|int }}
       name: spark
-    - port: {{ MASTER_WEBUI_PORT|int }}
-      targetPort: {{ MASTER_WEBUI_PORT|int }}
+    - port: {{ SPARK_MASTER_WEBUI_PORT|int }}
+      targetPort: {{ SPARK_MASTER_WEBUI_PORT|int }}
       name: webui
+      #TODO REMOVE THIS IN FAVOR OF JUPYTER SERVICE PROXY
     - port: 80
       targetPort: {{ MASTER_WEBUI_PORT|int }}
       name: proxyui

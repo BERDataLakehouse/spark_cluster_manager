@@ -47,29 +47,35 @@ spec:
             - name: SPARK_MASTER_URL
               value: spark://{{ MASTER_NAME }}.{{ NAMESPACE }}:{{ MASTER_PORT }}
             - name: SPARK_WORKER_CORES
-              value: "{{ WORKER_CORES }}"
+              value: {{ WORKER_CORES }}
             - name: SPARK_WORKER_MEMORY
-              value: "{{ WORKER_MEMORY }}"
+              value: {{ WORKER_MEMORY }}
             - name: SPARK_WORKER_WEBUI_PORT
-              value: "{{ WORKER_WEBUI_PORT }}"
+              value: {{ WORKER_WEBUI_PORT }}
             - name: POSTGRES_USER
-              value: "{{ POSTGRES_USER }}"
+              value: {{ POSTGRES_USER }}
             - name: POSTGRES_PASSWORD
-              value: "{{ POSTGRES_PASSWORD }}"
+              value: {{ POSTGRES_PASSWORD }}
             - name: POSTGRES_DB
-              value: "{{ POSTGRES_DB }}"
+              value: {{ POSTGRES_DB }}
             - name: POSTGRES_URL
-              value: "{{ POSTGRES_URL }}"
-            - name: REDIS_HOST
-              value: "{{ REDIS_HOST }}"
-            - name: REDIS_PORT
-              value: "{{ REDIS_PORT }}"
-            - name: DELTALAKE_WAREHOUSE_DIR
-              value: "{{ DELTALAKE_WAREHOUSE_DIR }}"
-          resources:
-            requests:
-              memory: "{{ WORKER_MEMORY }}"
-              cpu: "{{ WORKER_CORES }}"
-            limits:
-              memory: "{{ WORKER_MEMORY }}"
-              cpu: "{{ WORKER_CORES }}"
+              value: {{ POSTGRES_URL }}
+            - name: BERDL_REDIS_HOST
+              value: {{ REDIS_HOST }}
+            - name: BERDL_REDIS_PORT
+              value: {{ REDIS_PORT }}
+            - name: BERDL_DELTALAKE_WAREHOUSE_PATH
+              value: {{ DELTALAKE_WAREHOUSE_DIR }}
+            - name: SPARK_WORKER_PORT
+              value: {{ SPARK_WORKER_PORT }}
+            - name: BERDL_HIVE_METASTORE_URI
+              value: {{ HIVE_METASTORE_URI }}
+
+# TODO MATCH THESE WITH SPARK_WORKER_MEMORY AND SPARK_WORKER_CORES? I COULD BE WRONG ABOUT THIS
+#          resources:
+#            requests:
+#              memory: "{{ WORKER_MEMORY }}"
+#              cpu: "{{ WORKER_CORES }}"
+#            limits:
+#              memory: "{{ WORKER_MEMORY }}"
+#              cpu: "{{ WORKER_CORES }}"
