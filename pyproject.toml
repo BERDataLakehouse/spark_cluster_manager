@@ -24,25 +24,24 @@ dev = [
     "ipython>=9.2.0",
     "pytest==8.3.5",
     "pytest-cov==6.1.1",
+    "pytest-env>=1.1.5",
 ]
 
-[tool.pytest.ini_options]
-env = [
-    "KUBE_SPARK_MANAGER_NAMESPACE=default",
-    "KUBE_NAMESPACE=test-namespace",
-    "SPARK_IMAGE=spark:test",
-    "BERDL_POSTGRES_USER=test_user",
-    "BERDL_POSTGRES_PASSWORD=test_password",
-    "BERDL_POSTGRES_DB=test_db",
-    "BERDL_POSTGRES_URL=postgresql://test_user:test_password@localhost:5432/test_db",
-    "BERDL_REDIS_HOST=localhost",
-    "BERDL_REDIS_PORT=6379",
-    "BERDL_HIVE_METASTORE_URI=thrift://localhost:9083",
-    "BERDL_DELTALAKE_WAREHOUSE_DIRECTORY_PATH=s3://test-bucket/warehouse",
-    "SPARK_MASTER_PORT=7077",
-    "SPARK_MASTER_WEBUI_PORT=8080",
-    "SPARK_WORKER_CORES=2",
-    "SPARK_WORKER_MEMORY=2g",
-    "SPARK_WORKER_PORT=7078",
-    "SPARK_WORKER_WEBUI_PORT=8081"
-]
+[tool.pytest_env]
+KUBE_SPARK_MANAGER_NAMESPACE = "default"
+KUBE_NAMESPACE = "test-namespace"
+SPARK_IMAGE = "spark:test"
+BERDL_POSTGRES_USER = "test_user"
+BERDL_POSTGRES_PASSWORD = "test_password"
+BERDL_POSTGRES_DB = "test_db"
+BERDL_POSTGRES_URL = "postgresql://test_user:test_password@localhost:5432/test_db"
+BERDL_REDIS_HOST = "localhost"
+BERDL_REDIS_PORT = "6379"
+BERDL_HIVE_METASTORE_URI = "thrift://localhost:9083"
+BERDL_DELTALAKE_WAREHOUSE_DIRECTORY_PATH = "s3://test-bucket/warehouse"
+SPARK_MASTER_PORT = "7077"
+SPARK_MASTER_WEBUI_PORT = "8080"
+DEFAULT_SPARK_WORKER_CORES = "2"
+DEFAULT_SPARK_WORKER_MEMORY = "2g"
+SPARK_WORKER_PORT = "7078"
+SPARK_WORKER_WEBUI_PORT = "8081"

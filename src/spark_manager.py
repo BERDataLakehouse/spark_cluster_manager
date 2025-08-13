@@ -48,11 +48,10 @@ class KubeSparkManager:
         "BERDL_REDIS_PORT": "Redis port",
         "BERDL_HIVE_METASTORE_URI": "Hive metastore Thrift URI",
         "BERDL_DELTALAKE_WAREHOUSE_DIRECTORY_PATH": "Delta Lake warehouse directory (S3 bucket)",
-        # "SPARK_MASTER_HOST": "Hostname for Spark master to bind to ",
         "SPARK_MASTER_PORT" : "Port for Spark master (used in Spark configs)",
         "SPARK_MASTER_WEBUI_PORT" : "Web UI port for Spark master (used in Spark configs)",
-        "SPARK_WORKER_CORES": "Number of CPU cores for each Spark worker",
-        "SPARK_WORKER_MEMORY": "Memory allocation for each Spark worker",
+        "DEFAULT_SPARK_WORKER_CORES": "Number of CPU cores for each Spark worker",
+        "DEFAULT_SPARK_WORKER_MEMORY": "Memory allocation for each Spark worker",
         "SPARK_WORKER_PORT": "Port for Spark workers local daemon",
         "SPARK_WORKER_WEBUI_PORT": "Web UI port for Spark workers",
 
@@ -77,10 +76,10 @@ class KubeSparkManager:
     MASTER_SERVICE_TEMPLATE = str(TEMPLATES_DIR / MASTER_SERVICE_TEMPLATE_FILE)
 
     # Default configuration values for cluster settings
-    # TODO MAKE THESE REQUIRED ENV VARS? FIX THIS
+    # TODO MAKE THESE REQUIRED ENV VARS: FIX THIS
     DEFAULT_WORKER_COUNT = int(os.environ.get("DEFAULT_WORKER_COUNT", "4"))
-    DEFAULT_WORKER_CORES = int(os.environ.get("SPARK_WORKER_CORES", "1"))
-    DEFAULT_WORKER_MEMORY = os.environ.get("DEFAULT_WORKER_MEMORY", "50GiB")
+    DEFAULT_WORKER_CORES = int(os.environ["DEFAULT_SPARK_WORKER_CORES"])
+    DEFAULT_WORKER_MEMORY = os.environ["DEFAULT_SPARK_WORKER_MEMORY"]
     DEFAULT_MASTER_CORES = int(os.environ.get("DEFAULT_MASTER_CORES", "1"))
     DEFAULT_MASTER_MEMORY = os.environ.get("DEFAULT_MASTER_MEMORY", "50GiB")
 
@@ -277,8 +276,12 @@ class KubeSparkManager:
         Args:
             worker_count: Number of worker replicas
             worker_cores: CPU cores per worker
-            worker_memory: Memory allocation per worker
+            worker_memory: Memory allocation per worker in GiB
         """
+
+        spark_memory_mb = float(worker_memory.replace('GiB', '').replace('Gi', '').replace('G', '')) * 1024 * 0.9
+        spark_memory_mb = f"{int(spark_memory_mb)}m"
+b
         template_values = {
             "WORKER_NAME": self.worker_name,
             "NAMESPACE": self.namespace,
@@ -289,12 +292,12 @@ class KubeSparkManager:
             "MASTER_NAME": self.master_name,
             "MASTER_PORT": self.DEFAULT_MASTER_PORT,
             "WORKER_COUNT": worker_count,
-            "WORKER_CORES": worker_cores,
-            "WORKER_MEMORY": worker_memory,
+            "SPARK_WORKER_CONTAINER_CORES": worker_cores,
+            "SPARK_WORKER_CONTAINER_MEMORY": worker_memory,
             "SPARK_WORKER_WEBUI_PORT": self.DEFAULT_WORKER_WEBUI_PORT,
             "SPARK_WORKER_PORT": os.environ.get("SPARK_WORKER_PORT"),
-            "SPARK_WORKER_MEMORY": os.environ.get("SPARK_WORKER_MEMORY"),
-            "SPARK_WORKER_CORES": os.environ.get("SPARK_WORKER_CORES"),
+            "SPARK_WORKER_MEMORY": spark_memory_mb,
+            "SPARK_WORKER_CORES": worker_cores,
             "WORKER_NODE_SELECTOR_VALUES": os.environ.get("WORKER_NODE_SELECTOR_VALUES", ""),
             "BERDL_POSTGRES_USER": os.environ["BERDL_POSTGRES_USER"],
             "BERDL_POSTGRES_PASSWORD": os.environ["BERDL_POSTGRES_PASSWORD"],

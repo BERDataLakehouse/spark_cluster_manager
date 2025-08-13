@@ -97,10 +97,10 @@ async def create_cluster(
 async def get_cluster_status(
     user: kb_auth.KBaseUser = Depends(auth),
 ) -> SparkClusterStatus:
-    """Get the status of the Spark cluster belonging to the authenticated user. 
-    
+    """Get the status of the Spark cluster belonging to the authenticated user.
+
     Note: A successful API call (HTTP 200) does not necessarily mean the cluster is healthy.
-    Always check the 'error' field in the response to determine if there are issues with 
+    Always check the 'error' field in the response to determine if there are issues with
     the cluster deployments.
     """
 

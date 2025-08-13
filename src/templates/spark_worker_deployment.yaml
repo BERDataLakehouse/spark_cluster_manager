@@ -71,12 +71,10 @@ spec:
               value: "{{ SPARK_WORKER_PORT }}"
             - name: BERDL_HIVE_METASTORE_URI
               value: "{{ BERDL_HIVE_METASTORE_URI }}"
-
-# TODO MATCH THESE WITH SPARK_WORKER_MEMORY AND SPARK_WORKER_CORES? I COULD BE WRONG ABOUT THIS
-#          resources:
-#            requests:
-#              memory: "{{ WORKER_MEMORY }}"
-#              cpu: "{{ WORKER_CORES }}"
-#            limits:
-#              memory: "{{ WORKER_MEMORY }}"
-#              cpu: "{{ WORKER_CORES }}"
+          resources:
+            requests:
+              memory: "{{ SPARK_WORKER_CONTAINER_MEMORY }}"
+              cpu: "{{ SPARK_WORKER_CONTAINER_CORES }}"
+            limits:
+              memory: "{{ SPARK_WORKER_CONTAINER_MEMORY }}"
+              cpu: "{{ SPARK_WORKER_CONTAINER_CORES }}"

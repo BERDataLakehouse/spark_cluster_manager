@@ -4,8 +4,6 @@ from src.spark_manager import KubeSparkManager
 from unittest.mock import patch
 
 
-
-
 def assert_no_none_values(nested_dict):
     """Ensure no None values in a nested dictionary."""
     for key, value in nested_dict.items():
@@ -27,14 +25,12 @@ def test_spark_worker_create():
     template."""
     """ It tells you if there is a None value somewhere, and then you can dump the template to a file to see what is missing. """
 
-
     # Patch out kubernetes client to avoid actual API calls
 
     with patch("src.spark_manager.k8s") as mock_kubernetes:
-        mock_kubernetes.client.CoreV1Api.return_value.create_namespaced_pod = lambda *args, **kwargs: None
-
-        for key, value in KubeSparkManager.REQUIRED_ENV_VARS.items():
-            os.environ[key] = value
+        mock_kubernetes.client.CoreV1Api.return_value.create_namespaced_pod = (
+            lambda *args, **kwargs: None
+        )
 
         spark_manager = KubeSparkManager(username="Bob")
 
@@ -42,14 +38,17 @@ def test_spark_worker_create():
         assert spark_manager is not None
         assert spark_manager.validate_environment()
 
-        master_template = spark_manager._create_master_deployment(cores=1,memory=1)
+        master_template = spark_manager._create_master_deployment(
+            cores=1, memory="1GiB"
+        )
         assert_no_none_values(master_template)
 
         masster_service = spark_manager._create_master_service()
         assert_no_none_values(masster_service)
 
-        worker_template = spark_manager._create_worker_deployment(worker_count=2, worker_cores=1, worker_memory=1)
-
+        worker_template = spark_manager._create_worker_deployment(
+            worker_count=2, worker_cores=1, worker_memory="2GiB"
+        )
 
         assert_no_none_values(worker_template)
 

@@ -18,7 +18,9 @@ def not_falsy(obj: Any, name: str):
     return obj
 
 
-def contains_control_characters(string: str, allowed_chars: list[str] | None = None) -> int:
+def contains_control_characters(
+    string: str, allowed_chars: list[str] | None = None
+) -> int:
     """
     Check if a string contains control characters, as denoted by the Unicode character category
     starting with a C.
