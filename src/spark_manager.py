@@ -281,7 +281,7 @@ class KubeSparkManager:
 
         spark_memory_mb = float(worker_memory.replace('GiB', '').replace('Gi', '').replace('G', '')) * 1024 * 0.9
         spark_memory_mb = f"{int(spark_memory_mb)}m"
-b
+
         template_values = {
             "WORKER_NAME": self.worker_name,
             "NAMESPACE": self.namespace,
