@@ -6,25 +6,25 @@ metadata:
   labels:
     app: spark
     component: master
-    user: {{ USERNAME }}
-    cluster-id: {{ CLUSTER_ID }}
+    user: "{{ USERNAME }}"
+    cluster-id: "{{ CLUSTER_ID }}"
 spec:
   replicas: 1
   selector:
     matchLabels:
       app: spark
       component: master
-      user: {{ USERNAME }}
-      cluster-id: {{ CLUSTER_ID }}
+      user: "{{ USERNAME }}"
+      cluster-id: "{{ CLUSTER_ID }}"
   template:
     metadata:
       labels:
         app: spark
         component: master
-        user: {{ USERNAME }}
-        cluster-id: {{ CLUSTER_ID }}
+        user: "{{ USERNAME }}"
+        cluster-id: "{{ CLUSTER_ID }}"
     spec:
-      enableServiceLinks: False
+      enableServiceLinks: false
       hostname: spark-master-{{ USERNAME_LOWER }}
       {% if MASTER_NODE_SELECTOR_VALUES and MASTER_NODE_SELECTOR_VALUES.strip() %}
       affinity:
@@ -36,7 +36,7 @@ spec:
                     operator: In
                     values:
                       {% for node in MASTER_NODE_SELECTOR_VALUES.split(',') if node.strip() %}
-                      - {{ node.strip() }}
+                      - "{{ node.strip() }}"
                       {% endfor %}
       {% endif %}
       containers:
@@ -44,22 +44,21 @@ spec:
           image: {{ IMAGE }}
           imagePullPolicy: {{ IMAGE_PULL_POLICY }}
           ports:
-            - containerPort: {{ SPARK_MASTER_PORT }}
+            - containerPort: {{ SPARK_MASTER_PORT | int }}
               name: master-comm
               protocol: TCP
-            - containerPort: {{ SPARK_MASTER_WEBUI_PORT }}
+            - containerPort: {{ SPARK_MASTER_WEBUI_PORT | int }}
               name: master-ui
               protocol: TCP
           env:
             - name: SPARK_MODE
-              value: master
+              value: "master"
             - name: SPARK_MASTER_PORT
-              value: {{ SPARK_MASTER_PORT }}
+              value: "{{ SPARK_MASTER_PORT }}"
             - name: SPARK_MASTER_WEBUI_PORT
-              value: {{ SPARK_MASTER_WEBUI_PORT }}
+              value: "{{ SPARK_MASTER_WEBUI_PORT }}"
             - name: SPARK_MASTER_HOST
-              value: spark-master-{{ USERNAME_LOWER }}
-
+              value: "spark-master-{{ USERNAME_LOWER }}"
 
 # These should match SPARK_MASTER_CORES and SPARK_MASTER_MEMORY, and also be set as env vars, to let spark itself
 # Know how much resources it has available.
