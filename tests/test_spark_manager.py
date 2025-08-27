@@ -1,6 +1,6 @@
 import json
 import os
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock
 from src.spark_manager import KubeSparkManager
 
 
@@ -67,3 +67,47 @@ def test_parse_tolerations_valid():
             manager = KubeSparkManager('testuser')
             result = manager._parse_tolerations()
             assert result == tolerations_json
+
+
+def test_create_master_deployment_includes_tolerations():
+    """Test that _create_master_deployment includes tolerations in template values."""
+    tolerations = [{"key": "environments", "operator": "Equal", "value": "dev", "effect": "NoSchedule"}]
+    tolerations_json = json.dumps(tolerations)
+    
+    with patch.dict(os.environ, {'BERDL_TOLERATIONS': tolerations_json}):
+        with patch('kubernetes.config.load_incluster_config'):
+            with patch('src.spark_manager.render_yaml_template') as mock_render:
+                with patch.object(KubeSparkManager, '_create_or_replace_deployment'):
+                    mock_render.return_value = {'mock': 'deployment'}
+                    
+                    manager = KubeSparkManager('testuser')
+                    manager._create_master_deployment(2, '4Gi')
+                    
+                    # Verify render_yaml_template was called with tolerations
+                    assert mock_render.called
+                    call_args = mock_render.call_args[0]
+                    template_values = call_args[1]
+                    assert 'BERDL_TOLERATIONS' in template_values
+                    assert template_values['BERDL_TOLERATIONS'] == tolerations_json
+
+
+def test_create_worker_deployment_includes_tolerations():
+    """Test that _create_worker_deployment includes tolerations in template values."""
+    tolerations = [{"key": "environments", "operator": "Equal", "value": "prod", "effect": "NoSchedule"}]
+    tolerations_json = json.dumps(tolerations)
+    
+    with patch.dict(os.environ, {'BERDL_TOLERATIONS': tolerations_json}):
+        with patch('kubernetes.config.load_incluster_config'):
+            with patch('src.spark_manager.render_yaml_template') as mock_render:
+                with patch.object(KubeSparkManager, '_create_or_replace_deployment'):
+                    mock_render.return_value = {'mock': 'deployment'}
+                    
+                    manager = KubeSparkManager('testuser')
+                    manager._create_worker_deployment(3, 2, '4Gi')
+                    
+                    # Verify render_yaml_template was called with tolerations
+                    assert mock_render.called
+                    call_args = mock_render.call_args[0]
+                    template_values = call_args[1]
+                    assert 'BERDL_TOLERATIONS' in template_values
+                    assert template_values['BERDL_TOLERATIONS'] == tolerations_json
