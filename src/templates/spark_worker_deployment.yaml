@@ -38,6 +38,9 @@ spec:
                       - "{{ node.strip() }}"
                       {% endfor %}
       {% endif %}
+      {% if BERDL_TOLERATIONS and BERDL_TOLERATIONS.strip() %}
+      tolerations: {{ BERDL_TOLERATIONS }}
+      {% endif %}
       containers:
         - name: spark-worker
           image: {{ IMAGE }}
