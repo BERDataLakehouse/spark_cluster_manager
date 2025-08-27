@@ -32,7 +32,7 @@ A simple API service for managing Spark clusters in Kubernetes for JupyterHub us
    uv sync --locked # only the first time or when uv.lock changes
    ```
 
-## Local Unit Testing
+## Local Unit Testing 
 
 The project uses pytest for unit testing. To run the tests:
 
