@@ -15,6 +15,7 @@ from src.service.config import configure_logging, get_settings
 from src.service.exception_handlers import universal_error_handler
 from src.service.exceptions import InvalidAuthHeaderError
 from src.service.models import ErrorResponse
+from src.spark_manager import KubeSparkManager
 
 # Configure logging
 configure_logging()
@@ -90,5 +91,7 @@ def create_application() -> FastAPI:
         logger.info("Application shut down")
 
     app.add_event_handler("shutdown", shutdown_event)
+
+    KubeSparkManager.validate_environment()
 
     return app

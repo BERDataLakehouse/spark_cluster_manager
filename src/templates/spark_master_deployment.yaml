@@ -6,24 +6,25 @@ metadata:
   labels:
     app: spark
     component: master
-    user: {{ USERNAME }}
-    cluster-id: {{ CLUSTER_ID }}
+    user: "{{ USERNAME }}"
+    cluster-id: "{{ CLUSTER_ID }}"
 spec:
   replicas: 1
   selector:
     matchLabels:
       app: spark
       component: master
-      user: {{ USERNAME }}
-      cluster-id: {{ CLUSTER_ID }}
+      user: "{{ USERNAME }}"
+      cluster-id: "{{ CLUSTER_ID }}"
   template:
     metadata:
       labels:
         app: spark
         component: master
-        user: {{ USERNAME }}
-        cluster-id: {{ CLUSTER_ID }}
+        user: "{{ USERNAME }}"
+        cluster-id: "{{ CLUSTER_ID }}"
     spec:
+      enableServiceLinks: false
       hostname: spark-master-{{ USERNAME_LOWER }}
       {% if MASTER_NODE_SELECTOR_VALUES and MASTER_NODE_SELECTOR_VALUES.strip() %}
       affinity:
@@ -35,7 +36,7 @@ spec:
                     operator: In
                     values:
                       {% for node in MASTER_NODE_SELECTOR_VALUES.split(',') if node.strip() %}
-                      - {{ node.strip() }}
+                      - "{{ node.strip() }}"
                       {% endfor %}
       {% endif %}
       containers:
@@ -43,43 +44,29 @@ spec:
           image: {{ IMAGE }}
           imagePullPolicy: {{ IMAGE_PULL_POLICY }}
           ports:
-            - containerPort: {{ MASTER_PORT }}
+            - containerPort: {{ SPARK_MASTER_PORT | int }}
               name: master-comm
               protocol: TCP
-            - containerPort: {{ MASTER_WEBUI_PORT }}
+            - containerPort: {{ SPARK_MASTER_WEBUI_PORT | int }}
               name: master-ui
               protocol: TCP
           env:
             - name: SPARK_MODE
-              value: master
+              value: "master"
             - name: SPARK_MASTER_PORT
-              value: "{{ MASTER_PORT }}"
+              value: "{{ SPARK_MASTER_PORT }}"
             - name: SPARK_MASTER_WEBUI_PORT
-              value: "{{ MASTER_WEBUI_PORT }}"
-            - name: MAX_EXECUTORS
-              value: "{{ MAX_EXECUTORS }}"
-            - name: MAX_CORES_PER_APPLICATION
-              value: "{{ MAX_CORES_PER_APPLICATION }}"
-            - name: EXECUTOR_CORES
-              value: "{{ EXECUTOR_CORES }}"
-            - name: POSTGRES_USER
-              value: "{{ POSTGRES_USER }}"
-            - name: POSTGRES_PASSWORD
-              value: "{{ POSTGRES_PASSWORD }}"
-            - name: POSTGRES_DB
-              value: "{{ POSTGRES_DB }}"
-            - name: POSTGRES_URL
-              value: "{{ POSTGRES_URL }}"
-            - name: REDIS_HOST
-              value: "{{ REDIS_HOST }}"
-            - name: REDIS_PORT
-              value: "{{ REDIS_PORT }}"
-            - name: DELTALAKE_WAREHOUSE_DIR
-              value: "{{ DELTALAKE_WAREHOUSE_DIR }}"
-          resources:
-            requests:
-              memory: "{{ MASTER_MEMORY }}"
-              cpu: "{{ MASTER_CORES }}"
-            limits:
-              memory: "{{ MASTER_MEMORY }}"
-              cpu: "{{ MASTER_CORES }}"
+              value: "{{ SPARK_MASTER_WEBUI_PORT }}"
+            - name: SPARK_MASTER_HOST
+              value: "spark-master-{{ USERNAME_LOWER }}"
+
+# These should match SPARK_MASTER_CORES and SPARK_MASTER_MEMORY, and also be set as env vars, to let spark itself
+# Know how much resources it has available.
+
+#          resources:
+#            requests:
+#              memory: "{{ MASTER_MEMORY }}"
+#              cpu: "{{ MASTER_CORES }}"
+#            limits:
+#              memory: "{{ MASTER_MEMORY }}"
+#              cpu: "{{ MASTER_CORES }}"

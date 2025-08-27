@@ -11,11 +11,11 @@ router = APIRouter(tags=["health"])
 
 
 @router.get(
-    "/health", 
+    "/health",
     response_model=HealthResponse,
     summary="Health check",
-    description="Returns the health status of the API."
+    description="Returns the health status of the API.",
 )
 async def health_check():
     """Health check endpoint."""
-    return {"status": "healthy"} 
+    return {"status": "healthy"}

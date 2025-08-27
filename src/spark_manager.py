@@ -23,6 +23,10 @@ logger = logging.getLogger(__name__)
 # Get the path to the templates directory
 TEMPLATES_DIR = pathlib.Path(__file__).parent / "templates"
 
+#TODO: We should use a pydantic settings model for env vars
+# One model for SPARK_MASTER (prefix) env vars
+# Another model for SPARK_WORKER (prefix) env vars
+# One model for the SPARK MANAGER env vars or BERDL specific vars?
 
 class KubeSparkManager:
     """
@@ -36,14 +40,24 @@ class KubeSparkManager:
     REQUIRED_ENV_VARS = {
         "KUBE_NAMESPACE": "Kubernetes namespace for Spark clusters",
         "SPARK_IMAGE": "Docker image for Spark master and workers",
-        "POSTGRES_USER": "PostgreSQL username",
-        "POSTGRES_PASSWORD": "PostgreSQL password",
-        "POSTGRES_DB": "PostgreSQL database name",
-        "POSTGRES_URL": "PostgreSQL connection URL",
-        "REDIS_HOST": "Redis host",
-        "REDIS_PORT": "Redis port",
-        "DELTALAKE_WAREHOUSE_DIR": "Delta Lake warehouse directory (S3 bucket)",
+        "BERDL_POSTGRES_USER": "PostgreSQL username",
+        "BERDL_POSTGRES_PASSWORD": "PostgreSQL password",
+        "BERDL_POSTGRES_DB": "PostgreSQL database name",
+        "BERDL_POSTGRES_URL": "PostgreSQL connection URL",
+        "BERDL_REDIS_HOST": "Redis host",
+        "BERDL_REDIS_PORT": "Redis port",
+        "BERDL_HIVE_METASTORE_URI": "Hive metastore Thrift URI",
+        "BERDL_DELTALAKE_WAREHOUSE_DIRECTORY_PATH": "Delta Lake warehouse directory (S3 bucket)",
+        "SPARK_MASTER_PORT" : "Port for Spark master (used in Spark configs)",
+        "SPARK_MASTER_WEBUI_PORT" : "Web UI port for Spark master (used in Spark configs)",
+        "DEFAULT_SPARK_WORKER_CORES": "Number of CPU cores for each Spark worker",
+        "DEFAULT_SPARK_WORKER_MEMORY": "Memory allocation for each Spark worker",
+        "SPARK_WORKER_PORT": "Port for Spark workers local daemon",
+        "SPARK_WORKER_WEBUI_PORT": "Web UI port for Spark workers",
+
     }
+
+    # SPARK_MASTER_HOST SPARK_MASTER_URL and SPARK_MODE are needed, but not taken from the env, they are in the templates
 
     # Template files
     MASTER_DEPLOYMENT_TEMPLATE_FILE = os.environ.get(
@@ -62,9 +76,10 @@ class KubeSparkManager:
     MASTER_SERVICE_TEMPLATE = str(TEMPLATES_DIR / MASTER_SERVICE_TEMPLATE_FILE)
 
     # Default configuration values for cluster settings
+    # TODO MAKE THESE REQUIRED ENV VARS: FIX THIS
     DEFAULT_WORKER_COUNT = int(os.environ.get("DEFAULT_WORKER_COUNT", "4"))
-    DEFAULT_WORKER_CORES = int(os.environ.get("DEFAULT_WORKER_CORES", "1"))
-    DEFAULT_WORKER_MEMORY = os.environ.get("DEFAULT_WORKER_MEMORY", "50GiB")
+    DEFAULT_WORKER_CORES = int(os.environ["DEFAULT_SPARK_WORKER_CORES"])
+    DEFAULT_WORKER_MEMORY = os.environ["DEFAULT_SPARK_WORKER_MEMORY"]
     DEFAULT_MASTER_CORES = int(os.environ.get("DEFAULT_MASTER_CORES", "1"))
     DEFAULT_MASTER_MEMORY = os.environ.get("DEFAULT_MASTER_MEMORY", "50GiB")
 
@@ -196,8 +211,8 @@ class KubeSparkManager:
             "CLUSTER_ID": self.cluster_id,
             "IMAGE": self.image,
             "IMAGE_PULL_POLICY": self.image_pull_policy,
-            "MASTER_PORT": self.DEFAULT_MASTER_PORT,
-            "MASTER_WEBUI_PORT": self.DEFAULT_MASTER_WEBUI_PORT,
+            "SPARK_MASTER_PORT": self.DEFAULT_MASTER_PORT,
+            "SPARK_MASTER_WEBUI_PORT": self.DEFAULT_MASTER_WEBUI_PORT,
             "MAX_EXECUTORS": os.environ.get(
                 "MAX_EXECUTORS", self.DEFAULT_MAX_EXECUTORS
             ),
@@ -207,16 +222,16 @@ class KubeSparkManager:
             "EXECUTOR_CORES": os.environ.get(
                 "EXECUTOR_CORES", self.DEFAULT_EXECUTOR_CORES
             ),
-            "MASTER_MEMORY": memory,
-            "MASTER_CORES": cores,
+            "SPARK_MASTER_MEMORY": memory,
+            "SPARK_MASTER_CORES": cores,
             "MASTER_NODE_SELECTOR_VALUES": os.environ.get("MASTER_NODE_SELECTOR_VALUES", ""),
-            "POSTGRES_USER": os.environ["POSTGRES_USER"],
-            "POSTGRES_PASSWORD": os.environ["POSTGRES_PASSWORD"],
-            "POSTGRES_DB": os.environ["POSTGRES_DB"],
-            "POSTGRES_URL": os.environ["POSTGRES_URL"],
-            "REDIS_HOST": os.environ["REDIS_HOST"],
-            "REDIS_PORT": os.environ["REDIS_PORT"],
-            "DELTALAKE_WAREHOUSE_DIR": os.environ["DELTALAKE_WAREHOUSE_DIR"],
+            "BERDL_POSTGRES_USER": os.environ["BERDL_POSTGRES_USER"],
+            "BERDL_POSTGRES_PASSWORD": os.environ["BERDL_POSTGRES_PASSWORD"],
+            "BERDL_POSTGRES_DB": os.environ["BERDL_POSTGRES_DB"],
+            "BERDL_POSTGRES_URL": os.environ["BERDL_POSTGRES_URL"],
+            "BERDL_REDIS_HOST": os.environ["BERDL_REDIS_HOST"],
+            "BERDL_REDIS_PORT": os.environ["BERDL_REDIS_PORT"],
+            "BERDL_DELTALAKE_WAREHOUSE_DIRECTORY_PATH": os.environ["BERDL_DELTALAKE_WAREHOUSE_DIRECTORY_PATH"],
         }
 
         deployment = render_yaml_template(
@@ -226,6 +241,9 @@ class KubeSparkManager:
         self._create_or_replace_deployment(
             deployment, self.master_name, "Spark master deployment"
         )
+        return deployment
+
+
 
     def _create_master_service(self):
         """Create a Kubernetes service for the Spark master."""
@@ -234,8 +252,8 @@ class KubeSparkManager:
             "NAMESPACE": self.namespace,
             "USERNAME": self.username,
             "CLUSTER_ID": self.cluster_id,
-            "MASTER_PORT": self.DEFAULT_MASTER_PORT,
-            "MASTER_WEBUI_PORT": self.DEFAULT_MASTER_WEBUI_PORT,
+            "SPARK_MASTER_PORT": self.DEFAULT_MASTER_PORT,
+            "SPARK_MASTER_WEBUI_PORT": self.DEFAULT_MASTER_WEBUI_PORT,
         }
 
         service = render_yaml_template(self.MASTER_SERVICE_TEMPLATE, template_values)
@@ -243,6 +261,8 @@ class KubeSparkManager:
         self._create_or_replace_service(
             service, self.master_name, "Spark master service"
         )
+
+        return service
 
     def _create_worker_deployment(
         self,
@@ -256,8 +276,12 @@ class KubeSparkManager:
         Args:
             worker_count: Number of worker replicas
             worker_cores: CPU cores per worker
-            worker_memory: Memory allocation per worker
+            worker_memory: Memory allocation per worker in GiB
         """
+
+        spark_memory_mb = float(worker_memory.replace('GiB', '').replace('Gi', '').replace('G', '')) * 1024 * 0.9
+        spark_memory_mb = f"{int(spark_memory_mb)}m"
+
         template_values = {
             "WORKER_NAME": self.worker_name,
             "NAMESPACE": self.namespace,
@@ -268,17 +292,21 @@ class KubeSparkManager:
             "MASTER_NAME": self.master_name,
             "MASTER_PORT": self.DEFAULT_MASTER_PORT,
             "WORKER_COUNT": worker_count,
-            "WORKER_CORES": worker_cores,
-            "WORKER_MEMORY": worker_memory,
-            "WORKER_WEBUI_PORT": self.DEFAULT_WORKER_WEBUI_PORT,
+            "SPARK_WORKER_CONTAINER_CORES": worker_cores,
+            "SPARK_WORKER_CONTAINER_MEMORY": worker_memory,
+            "SPARK_WORKER_WEBUI_PORT": self.DEFAULT_WORKER_WEBUI_PORT,
+            "SPARK_WORKER_PORT": os.environ.get("SPARK_WORKER_PORT"),
+            "SPARK_WORKER_MEMORY": spark_memory_mb,
+            "SPARK_WORKER_CORES": worker_cores,
             "WORKER_NODE_SELECTOR_VALUES": os.environ.get("WORKER_NODE_SELECTOR_VALUES", ""),
-            "POSTGRES_USER": os.environ["POSTGRES_USER"],
-            "POSTGRES_PASSWORD": os.environ["POSTGRES_PASSWORD"],
-            "POSTGRES_DB": os.environ["POSTGRES_DB"],
-            "POSTGRES_URL": os.environ["POSTGRES_URL"],
-            "REDIS_HOST": os.environ["REDIS_HOST"],
-            "REDIS_PORT": os.environ["REDIS_PORT"],
-            "DELTALAKE_WAREHOUSE_DIR": os.environ["DELTALAKE_WAREHOUSE_DIR"],
+            "BERDL_POSTGRES_USER": os.environ["BERDL_POSTGRES_USER"],
+            "BERDL_POSTGRES_PASSWORD": os.environ["BERDL_POSTGRES_PASSWORD"],
+            "BERDL_POSTGRES_DB": os.environ["BERDL_POSTGRES_DB"],
+            "BERDL_POSTGRES_URL": os.environ["BERDL_POSTGRES_URL"],
+            "BERDL_REDIS_HOST": os.environ["BERDL_REDIS_HOST"],
+            "BERDL_REDIS_PORT": os.environ["BERDL_REDIS_PORT"],
+            "BERDL_DELTALAKE_WAREHOUSE_DIRECTORY_PATH": os.environ["BERDL_DELTALAKE_WAREHOUSE_DIRECTORY_PATH"],
+            "BERDL_HIVE_METASTORE_URI": os.environ["BERDL_HIVE_METASTORE_URI"]
         }
 
         deployment = render_yaml_template(
@@ -290,6 +318,8 @@ class KubeSparkManager:
             self.worker_name,
             f"Spark worker deployment with {worker_count} replicas",
         )
+
+        return deployment
 
     def _create_or_replace_service(
         self, service: dict[str, Any], name: str, resource_description: str

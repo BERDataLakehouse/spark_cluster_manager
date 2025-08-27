@@ -9,7 +9,7 @@ metadata:
     user: {{ USERNAME }}
     cluster-id: {{ CLUSTER_ID }}
 spec:
-  replicas: {{ WORKER_COUNT }}
+  replicas: {{ WORKER_COUNT | int }}
   selector:
     matchLabels:
       app: spark
@@ -24,6 +24,7 @@ spec:
         user: {{ USERNAME }}
         cluster-id: {{ CLUSTER_ID }}
     spec:
+      enableServiceLinks: false
       {% if WORKER_NODE_SELECTOR_VALUES and WORKER_NODE_SELECTOR_VALUES.strip() %}
       affinity:
         nodeAffinity:
@@ -34,7 +35,7 @@ spec:
                     operator: In
                     values:
                       {% for node in WORKER_NODE_SELECTOR_VALUES.split(',') if node.strip() %}
-                      - {{ node.strip() }}
+                      - "{{ node.strip() }}"
                       {% endfor %}
       {% endif %}
       containers:
@@ -43,33 +44,37 @@ spec:
           imagePullPolicy: {{ IMAGE_PULL_POLICY }}
           env:
             - name: SPARK_MODE
-              value: worker
+              value: "worker"
             - name: SPARK_MASTER_URL
-              value: spark://{{ MASTER_NAME }}.{{ NAMESPACE }}:{{ MASTER_PORT }}
+              value: "spark://{{ MASTER_NAME }}.{{ NAMESPACE }}:{{ MASTER_PORT }}"
             - name: SPARK_WORKER_CORES
-              value: "{{ WORKER_CORES }}"
+              value: "{{ SPARK_WORKER_CORES }}"
             - name: SPARK_WORKER_MEMORY
-              value: "{{ WORKER_MEMORY }}"
+              value: "{{ SPARK_WORKER_MEMORY }}"
             - name: SPARK_WORKER_WEBUI_PORT
-              value: "{{ WORKER_WEBUI_PORT }}"
-            - name: POSTGRES_USER
-              value: "{{ POSTGRES_USER }}"
-            - name: POSTGRES_PASSWORD
-              value: "{{ POSTGRES_PASSWORD }}"
-            - name: POSTGRES_DB
-              value: "{{ POSTGRES_DB }}"
-            - name: POSTGRES_URL
-              value: "{{ POSTGRES_URL }}"
-            - name: REDIS_HOST
-              value: "{{ REDIS_HOST }}"
-            - name: REDIS_PORT
-              value: "{{ REDIS_PORT }}"
-            - name: DELTALAKE_WAREHOUSE_DIR
-              value: "{{ DELTALAKE_WAREHOUSE_DIR }}"
+              value: "{{ SPARK_WORKER_WEBUI_PORT }}"
+            - name: BERDL_POSTGRES_USER
+              value: "{{ BERDL_POSTGRES_USER }}"
+            - name: BERDL_POSTGRES_PASSWORD
+              value: "{{ BERDL_POSTGRES_PASSWORD }}"
+            - name: BERDL_POSTGRES_DB
+              value: "{{ BERDL_POSTGRES_DB }}"
+            - name: BERDL_POSTGRES_URL
+              value: "{{ BERDL_POSTGRES_URL }}"
+            - name: BERDL_REDIS_HOST
+              value: "{{ BERDL_REDIS_HOST }}"
+            - name: BERDL_REDIS_PORT
+              value: "{{ BERDL_REDIS_PORT }}"
+            - name: BERDL_DELTALAKE_WAREHOUSE_DIRECTORY_PATH
+              value: "{{ BERDL_DELTALAKE_WAREHOUSE_DIRECTORY_PATH }}"
+            - name: SPARK_WORKER_PORT
+              value: "{{ SPARK_WORKER_PORT }}"
+            - name: BERDL_HIVE_METASTORE_URI
+              value: "{{ BERDL_HIVE_METASTORE_URI }}"
           resources:
             requests:
-              memory: "{{ WORKER_MEMORY }}"
-              cpu: "{{ WORKER_CORES }}"
+              memory: "{{ SPARK_WORKER_CONTAINER_MEMORY }}"
+              cpu: "{{ SPARK_WORKER_CONTAINER_CORES }}"
             limits:
-              memory: "{{ WORKER_MEMORY }}"
-              cpu: "{{ WORKER_CORES }}"
+              memory: "{{ SPARK_WORKER_CONTAINER_MEMORY }}"
+              cpu: "{{ SPARK_WORKER_CONTAINER_CORES }}"
