@@ -8,7 +8,7 @@ def test_noop():
 
 def test_render_yaml_template_with_tolerations():
     """Test that tolerations are correctly included in rendered YAML."""
-    # Create a simple template for testing
+    # Create a simple template for testing (now without conditional logic)
     template_content = """
 spec:
   tolerations:
@@ -16,12 +16,10 @@ spec:
       operator: "Equal"
       value: "True"
       effect: "NoSchedule"
-    {% if BERDL_TOLERATIONS and BERDL_TOLERATIONS.strip() %}
     - key: "environments"
       operator: "Equal"
       value: "{{ BERDL_TOLERATIONS }}"
       effect: "NoSchedule"
-    {% endif %}
   containers:
     - name: test
 """
@@ -46,7 +44,7 @@ spec:
         assert 'tolerations' in result['spec']
         tolerations = result['spec']['tolerations']
         
-        # Should have both default and environment tolerations
+        # Should always have both default and environment tolerations
         assert len(tolerations) == 2
         
         # Check default toleration
@@ -63,18 +61,18 @@ spec:
         assert env_toleration['value'] == environment
         assert env_toleration['effect'] == 'NoSchedule'
         
-        # Test without environment toleration
-        values_empty = {
-            "BERDL_TOLERATIONS": ""
+        # Test with different environment
+        values_prod = {
+            "BERDL_TOLERATIONS": "prod"
         }
         
-        result_empty = render_yaml_template(template_path, values_empty)
-        assert 'tolerations' in result_empty['spec']
+        result_prod = render_yaml_template(template_path, values_prod)
+        assert 'tolerations' in result_prod['spec']
         
-        # Should only have the default toleration
-        tolerations_empty = result_empty['spec']['tolerations']
-        assert len(tolerations_empty) == 1
-        assert tolerations_empty[0]['key'] == 'noschedule'
+        # Should still have both tolerations
+        tolerations_prod = result_prod['spec']['tolerations']
+        assert len(tolerations_prod) == 2
+        assert tolerations_prod[1]['value'] == 'prod'
         
     finally:
         # Clean up temp file

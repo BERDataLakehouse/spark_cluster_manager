@@ -1,0 +1,12 @@
+fastapi==0.115.12
+uvicorn==0.34.2
+kubernetes==32.0.1
+python-dotenv==1.1.0
+pydantic==2.11.5
+httpx==0.28.1
+pyyaml==6.0.2
+jinja2==3.1.6
+aiohttp==3.11.18
+cacheout==0.16.0
+pydantic-settings>=2.10.1
+pytest-env>=1.1.5

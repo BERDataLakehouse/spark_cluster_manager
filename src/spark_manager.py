@@ -54,6 +54,7 @@ class KubeSparkManager:
         "DEFAULT_SPARK_WORKER_MEMORY": "Memory allocation for each Spark worker",
         "SPARK_WORKER_PORT": "Port for Spark workers local daemon",
         "SPARK_WORKER_WEBUI_PORT": "Web UI port for Spark workers",
+        "BERDL_TOLERATIONS": "Environment toleration value (e.g., 'dev', 'prod')",
 
     }
 
@@ -157,18 +158,13 @@ class KubeSparkManager:
 
     def _parse_tolerations(self) -> str:
         """
-        Parse tolerations from the BERDL_TOLERATIONS environment variable.
+        Get the BERDL_TOLERATIONS environment variable value.
         
         Returns:
-            Simple string value for environment toleration or empty string if not set
+            Simple string value for environment toleration (e.g., "dev", "prod")
         """
-        tolerations_env = os.environ.get("BERDL_TOLERATIONS", "").strip()
-        if not tolerations_env:
-            return ""
-            
-        # Return the simple string value (e.g., "dev", "prod")
-        # This will be used in the template as the value for the environments toleration
-        return tolerations_env
+        # BERDL_TOLERATIONS is now required, so we can access it directly
+        return os.environ["BERDL_TOLERATIONS"]
 
     def create_cluster(
         self,

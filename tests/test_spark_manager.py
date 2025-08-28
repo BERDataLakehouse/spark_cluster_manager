@@ -1,24 +1,11 @@
 import os
 from unittest.mock import patch, MagicMock
+import pytest
 from src.spark_manager import KubeSparkManager
 
 
 def test_noop():
     assert 1 == 1
-
-
-def test_parse_tolerations_empty():
-    """Test that empty tolerations return empty string."""
-    with patch.dict(os.environ, {}, clear=False):
-        # Remove BERDL_TOLERATIONS if it exists
-        if 'BERDL_TOLERATIONS' in os.environ:
-            del os.environ['BERDL_TOLERATIONS']
-        
-        # Mock the kubernetes config loading to avoid actual cluster connection
-        with patch('kubernetes.config.load_incluster_config'):
-            manager = KubeSparkManager('testuser')
-            result = manager._parse_tolerations()
-            assert result == ""
 
 
 def test_parse_tolerations_valid():
@@ -41,6 +28,17 @@ def test_parse_tolerations_prod():
             manager = KubeSparkManager('testuser')
             result = manager._parse_tolerations()
             assert result == environment
+
+
+def test_missing_berdl_tolerations_raises_error():
+    """Test that missing BERDL_TOLERATIONS raises a ValueError."""
+    # Create an environment without BERDL_TOLERATIONS
+    env_without_tolerations = {k: v for k, v in os.environ.items() if k != 'BERDL_TOLERATIONS'}
+    
+    with patch.dict(os.environ, env_without_tolerations, clear=True):
+        with patch('kubernetes.config.load_incluster_config'):
+            with pytest.raises(ValueError, match="Missing required environment variables"):
+                KubeSparkManager('testuser')
 
 
 def test_create_master_deployment_includes_tolerations():

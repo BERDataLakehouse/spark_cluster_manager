@@ -44,12 +44,10 @@ spec:
           operator: "Equal"
           value: "True"
           effect: "NoSchedule"
-        {% if BERDL_TOLERATIONS and BERDL_TOLERATIONS.strip() %}
         - key: "environments"
           operator: "Equal"
           value: "{{ BERDL_TOLERATIONS }}"
           effect: "NoSchedule"
-        {% endif %}
       containers:
         - name: spark-master
           image: {{ IMAGE }}
