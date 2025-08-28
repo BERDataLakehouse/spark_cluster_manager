@@ -1,4 +1,3 @@
-import json
 import os
 from unittest.mock import patch, MagicMock
 from src.spark_manager import KubeSparkManager
@@ -22,59 +21,33 @@ def test_parse_tolerations_empty():
             assert result == ""
 
 
-def test_parse_tolerations_invalid_json():
-    """Test that invalid JSON tolerations return empty string."""
-    invalid_json = '{"key": "environments", "operator": "Equal", "value": "dev"'  # Missing closing brace
-    
-    with patch.dict(os.environ, {'BERDL_TOLERATIONS': invalid_json}):
-        with patch('kubernetes.config.load_incluster_config'):
-            manager = KubeSparkManager('testuser')
-            result = manager._parse_tolerations()
-            assert result == ""
-
-
-def test_parse_tolerations_not_list():
-    """Test that non-list JSON tolerations return empty string."""
-    not_list_json = '{"key": "environments", "operator": "Equal", "value": "dev"}'
-    
-    with patch.dict(os.environ, {'BERDL_TOLERATIONS': not_list_json}):
-        with patch('kubernetes.config.load_incluster_config'):
-            manager = KubeSparkManager('testuser')
-            result = manager._parse_tolerations()
-            assert result == ""
-
-
 def test_parse_tolerations_valid():
-    """Test that valid tolerations JSON is returned correctly."""
-    tolerations = [
-        {
-            "key": "environments",
-            "operator": "Equal",
-            "value": "dev",
-            "effect": "NoSchedule"
-        },
-        {
-            "key": "environments",
-            "operator": "Equal", 
-            "value": "prod",
-            "effect": "NoSchedule"
-        }
-    ]
-    tolerations_json = json.dumps(tolerations)
+    """Test that valid simple environment string is returned correctly."""
+    environment = "dev"
     
-    with patch.dict(os.environ, {'BERDL_TOLERATIONS': tolerations_json}):
+    with patch.dict(os.environ, {'BERDL_TOLERATIONS': environment}):
         with patch('kubernetes.config.load_incluster_config'):
             manager = KubeSparkManager('testuser')
             result = manager._parse_tolerations()
-            assert result == tolerations_json
+            assert result == environment
+
+
+def test_parse_tolerations_prod():
+    """Test that prod environment string is returned correctly."""
+    environment = "prod"
+    
+    with patch.dict(os.environ, {'BERDL_TOLERATIONS': environment}):
+        with patch('kubernetes.config.load_incluster_config'):
+            manager = KubeSparkManager('testuser')
+            result = manager._parse_tolerations()
+            assert result == environment
 
 
 def test_create_master_deployment_includes_tolerations():
     """Test that _create_master_deployment includes tolerations in template values."""
-    tolerations = [{"key": "environments", "operator": "Equal", "value": "dev", "effect": "NoSchedule"}]
-    tolerations_json = json.dumps(tolerations)
+    environment = "dev"
     
-    with patch.dict(os.environ, {'BERDL_TOLERATIONS': tolerations_json}):
+    with patch.dict(os.environ, {'BERDL_TOLERATIONS': environment}):
         with patch('kubernetes.config.load_incluster_config'):
             with patch('src.spark_manager.render_yaml_template') as mock_render:
                 with patch.object(KubeSparkManager, '_create_or_replace_deployment'):
@@ -88,15 +61,14 @@ def test_create_master_deployment_includes_tolerations():
                     call_args = mock_render.call_args[0]
                     template_values = call_args[1]
                     assert 'BERDL_TOLERATIONS' in template_values
-                    assert template_values['BERDL_TOLERATIONS'] == tolerations_json
+                    assert template_values['BERDL_TOLERATIONS'] == environment
 
 
 def test_create_worker_deployment_includes_tolerations():
     """Test that _create_worker_deployment includes tolerations in template values."""
-    tolerations = [{"key": "environments", "operator": "Equal", "value": "prod", "effect": "NoSchedule"}]
-    tolerations_json = json.dumps(tolerations)
+    environment = "prod"
     
-    with patch.dict(os.environ, {'BERDL_TOLERATIONS': tolerations_json}):
+    with patch.dict(os.environ, {'BERDL_TOLERATIONS': environment}):
         with patch('kubernetes.config.load_incluster_config'):
             with patch('src.spark_manager.render_yaml_template') as mock_render:
                 with patch.object(KubeSparkManager, '_create_or_replace_deployment'):
@@ -110,4 +82,4 @@ def test_create_worker_deployment_includes_tolerations():
                     call_args = mock_render.call_args[0]
                     template_values = call_args[1]
                     assert 'BERDL_TOLERATIONS' in template_values
-                    assert template_values['BERDL_TOLERATIONS'] == tolerations_json
+                    assert template_values['BERDL_TOLERATIONS'] == environment

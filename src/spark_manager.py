@@ -1,4 +1,3 @@
-import json
 import logging
 import os
 import pathlib
@@ -161,23 +160,15 @@ class KubeSparkManager:
         Parse tolerations from the BERDL_TOLERATIONS environment variable.
         
         Returns:
-            JSON string of tolerations or empty string if not set or invalid
+            Simple string value for environment toleration or empty string if not set
         """
         tolerations_env = os.environ.get("BERDL_TOLERATIONS", "").strip()
         if not tolerations_env:
             return ""
             
-        try:
-            # Validate that it's valid JSON
-            tolerations = json.loads(tolerations_env)
-            # Ensure it's a list
-            if not isinstance(tolerations, list):
-                logger.warning("BERDL_TOLERATIONS must be a JSON array, ignoring")
-                return ""
-            return tolerations_env
-        except json.JSONDecodeError as e:
-            logger.warning(f"Invalid JSON in BERDL_TOLERATIONS environment variable: {e}, ignoring")
-            return ""
+        # Return the simple string value (e.g., "dev", "prod")
+        # This will be used in the template as the value for the environments toleration
+        return tolerations_env
 
     def create_cluster(
         self,
