@@ -39,6 +39,15 @@ spec:
                       - "{{ node.strip() }}"
                       {% endfor %}
       {% endif %}
+      tolerations:
+        - key: "noschedule"
+          operator: "Equal"
+          value: "True"
+          effect: "NoSchedule"
+        - key: "environments"
+          operator: "Equal"
+          value: "{{ BERDL_TOLERATIONS }}"
+          effect: "NoSchedule"
       containers:
         - name: spark-master
           image: {{ IMAGE }}
