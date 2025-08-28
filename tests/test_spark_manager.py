@@ -8,27 +8,6 @@ def test_noop():
     assert 1 == 1
 
 
-def test_parse_tolerations_valid():
-    """Test that valid simple environment string is returned correctly."""
-    environment = "dev"
-    
-    with patch.dict(os.environ, {'BERDL_TOLERATIONS': environment}):
-        with patch('kubernetes.config.load_incluster_config'):
-            manager = KubeSparkManager('testuser')
-            result = manager._parse_tolerations()
-            assert result == environment
-
-
-def test_parse_tolerations_prod():
-    """Test that prod environment string is returned correctly."""
-    environment = "prod"
-    
-    with patch.dict(os.environ, {'BERDL_TOLERATIONS': environment}):
-        with patch('kubernetes.config.load_incluster_config'):
-            manager = KubeSparkManager('testuser')
-            result = manager._parse_tolerations()
-            assert result == environment
-
 
 def test_missing_berdl_tolerations_raises_error():
     """Test that missing BERDL_TOLERATIONS raises a ValueError."""

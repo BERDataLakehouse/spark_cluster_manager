@@ -156,15 +156,7 @@ class KubeSparkManager:
             f"Initialized KubeSparkManager for user {username} in namespace {self.namespace}"
         )
 
-    def _parse_tolerations(self) -> str:
-        """
-        Get the BERDL_TOLERATIONS environment variable value.
-        
-        Returns:
-            Simple string value for environment toleration (e.g., "dev", "prod")
-        """
-        # BERDL_TOLERATIONS is now required, so we can access it directly
-        return os.environ["BERDL_TOLERATIONS"]
+
 
     def create_cluster(
         self,
@@ -236,7 +228,7 @@ class KubeSparkManager:
             "SPARK_MASTER_MEMORY": memory,
             "SPARK_MASTER_CORES": cores,
             "MASTER_NODE_SELECTOR_VALUES": os.environ.get("MASTER_NODE_SELECTOR_VALUES", ""),
-            "BERDL_TOLERATIONS": self._parse_tolerations(),
+            "BERDL_TOLERATIONS": os.environ["BERDL_TOLERATIONS"],
             "BERDL_POSTGRES_USER": os.environ["BERDL_POSTGRES_USER"],
             "BERDL_POSTGRES_PASSWORD": os.environ["BERDL_POSTGRES_PASSWORD"],
             "BERDL_POSTGRES_DB": os.environ["BERDL_POSTGRES_DB"],
@@ -311,7 +303,7 @@ class KubeSparkManager:
             "SPARK_WORKER_MEMORY": spark_memory_mb,
             "SPARK_WORKER_CORES": worker_cores,
             "WORKER_NODE_SELECTOR_VALUES": os.environ.get("WORKER_NODE_SELECTOR_VALUES", ""),
-            "BERDL_TOLERATIONS": self._parse_tolerations(),
+            "BERDL_TOLERATIONS": os.environ["BERDL_TOLERATIONS"],
             "BERDL_POSTGRES_USER": os.environ["BERDL_POSTGRES_USER"],
             "BERDL_POSTGRES_PASSWORD": os.environ["BERDL_POSTGRES_PASSWORD"],
             "BERDL_POSTGRES_DB": os.environ["BERDL_POSTGRES_DB"],
