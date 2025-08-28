@@ -1,6 +1,0 @@
-main
-routes
-service
-spark_manager
-template_utils
-templates
