@@ -240,7 +240,7 @@ class KubeSparkManager:
             "MASTER_NAME": self.master_name,
             "NAMESPACE": self.namespace,
             "USERNAME": self.username,
-            "USERNAME_LOWER": sanitize_k8s_name(self.username),
+            "USERNAME_LOWER": self.username.lower(),
             "CLUSTER_ID": self.cluster_id,
             "IMAGE": self.image,
             "IMAGE_PULL_POLICY": self.image_pull_policy,
