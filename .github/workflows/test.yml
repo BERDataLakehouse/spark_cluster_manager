@@ -19,7 +19,7 @@ jobs:
       pull-requests: write
     strategy:
       matrix:
-        python-version: ["3.13"]
+        python-version: ["3.11"]
     steps:
     - uses: actions/checkout@v4
 
