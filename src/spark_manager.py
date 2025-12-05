@@ -1,6 +1,7 @@
 import logging
 import os
 import pathlib
+import re
 import uuid
 from typing import Any, Callable, Dict
 
@@ -15,6 +16,36 @@ from src.service.models import (
     SparkClusterStatus,
 )
 from src.template_utils import render_yaml_template
+
+
+def sanitize_k8s_name(name: str) -> str:
+    """
+    Sanitize a string to be Kubernetes DNS-1123 subdomain compliant.
+
+    Kubernetes resource names must:
+    - Consist of lowercase alphanumeric characters, '-', or '.'
+    - Start and end with an alphanumeric character
+    - Be at most 253 characters long
+
+    Args:
+        name: The string to sanitize (e.g., username with underscores)
+
+    Returns:
+        A DNS-1123 compliant string (replaces underscores with hyphens)
+    """
+    # Replace underscores and other invalid characters with hyphens
+    sanitized = re.sub(r"[^a-z0-9.-]", "-", name.lower())
+
+    # Ensure it starts and ends with alphanumeric
+    sanitized = re.sub(r"^[^a-z0-9]+", "", sanitized)
+    sanitized = re.sub(r"[^a-z0-9]+$", "", sanitized)
+
+    # Collapse multiple consecutive hyphens
+    sanitized = re.sub(r"-+", "-", sanitized)
+
+    # Truncate to 253 characters (K8s limit)
+    return sanitized[:253]
+
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -54,7 +85,6 @@ class KubeSparkManager:
         "DEFAULT_SPARK_WORKER_MEMORY": "Memory allocation for each Spark worker",
         "SPARK_WORKER_PORT": "Port for Spark workers local daemon",
         "SPARK_WORKER_WEBUI_PORT": "Web UI port for Spark workers",
-
     }
 
     # SPARK_MASTER_HOST SPARK_MASTER_URL and SPARK_MODE are needed, but not taken from the env, they are in the templates
@@ -139,12 +169,15 @@ class KubeSparkManager:
         self.image = env_vars["SPARK_IMAGE"]
         self.image_pull_policy = self.DEFAULT_IMAGE_PULL_POLICY
 
-        # Generate a unique identifier for this user's Spark cluster
-        self.cluster_id = f"spark-{username.lower()}-{str(uuid.uuid4())[:8]}"
+        # Sanitize username for Kubernetes resource names (replace underscores with hyphens)
+        sanitized_username = sanitize_k8s_name(username)
 
-        # Service names
-        self.master_name = f"spark-master-{username.lower()}"
-        self.worker_name = f"spark-worker-{username.lower()}"
+        # Generate a unique identifier for this user's Spark cluster
+        self.cluster_id = f"spark-{sanitized_username}-{str(uuid.uuid4())[:8]}"
+
+        # Service names (must be DNS-1123 compliant)
+        self.master_name = f"spark-master-{sanitized_username}"
+        self.worker_name = f"spark-worker-{sanitized_username}"
 
         # Initialize Kubernetes client
         k8s.config.load_incluster_config()
@@ -207,7 +240,7 @@ class KubeSparkManager:
             "MASTER_NAME": self.master_name,
             "NAMESPACE": self.namespace,
             "USERNAME": self.username,
-            "USERNAME_LOWER": self.username.lower(),
+            "USERNAME_LOWER": sanitize_k8s_name(self.username),
             "CLUSTER_ID": self.cluster_id,
             "IMAGE": self.image,
             "IMAGE_PULL_POLICY": self.image_pull_policy,
