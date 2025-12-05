@@ -50,7 +50,7 @@ class SparkClusterConfig(BaseModel):
     worker_memory: Annotated[
         ByteSize,
         Field(
-            description=f"Memory allocated per worker node (Range: {MIN_MEMORY_BYTES / (1024*1024):.1f} MiB to {MAX_MEMORY_BYTES / GiB:.0f} GiB). Accepts formats like '10GiB', '10240MiB'.",
+            description=f"Memory allocated per worker node (Range: {MIN_MEMORY_BYTES / (1024 * 1024):.1f} MiB to {MAX_MEMORY_BYTES / GiB:.0f} GiB). Accepts formats like '10GiB', '10240MiB'.",
             ge=MIN_MEMORY_BYTES,
             le=MAX_MEMORY_BYTES,
             examples=[DEFAULT_WORKER_MEMORY, "32GiB"],
@@ -72,7 +72,7 @@ class SparkClusterConfig(BaseModel):
     master_memory: Annotated[
         ByteSize,
         Field(
-            description=f"Memory allocated for the master node (Range: {MIN_MEMORY_BYTES / (1024*1024):.1f} MiB to {MAX_MEMORY_BYTES / GiB:.0f} GiB). Accepts formats like '10GiB', '10240MiB'.",
+            description=f"Memory allocated for the master node (Range: {MIN_MEMORY_BYTES / (1024 * 1024):.1f} MiB to {MAX_MEMORY_BYTES / GiB:.0f} GiB). Accepts formats like '10GiB', '10240MiB'.",
             ge=MIN_MEMORY_BYTES,
             le=MAX_MEMORY_BYTES,
             examples=[DEFAULT_MASTER_MEMORY, "16GiB"],

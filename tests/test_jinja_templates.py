@@ -1,5 +1,3 @@
-import json
-import os
 from src.spark_manager import KubeSparkManager
 from unittest.mock import patch
 
