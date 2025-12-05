@@ -23,57 +23,54 @@ spec:
   containers:
     - name: test
 """
-    
+
     # Write template to a temporary file
     import tempfile
-    with tempfile.NamedTemporaryFile(mode='w', suffix='.yaml', delete=False) as f:
+
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".yaml", delete=False) as f:
         f.write(template_content)
         template_path = f.name
-    
+
     try:
         # Test with environment-specific toleration
         environment = "dev"
-        
-        values = {
-            "BERDL_TOLERATIONS": environment
-        }
-        
+
+        values = {"BERDL_TOLERATIONS": environment}
+
         result = render_yaml_template(template_path, values)
-        
+
         # Check that tolerations are included in the rendered YAML
-        assert 'tolerations' in result['spec']
-        tolerations = result['spec']['tolerations']
-        
+        assert "tolerations" in result["spec"]
+        tolerations = result["spec"]["tolerations"]
+
         # Should always have both default and environment tolerations
         assert len(tolerations) == 2
-        
+
         # Check default toleration
         default_toleration = tolerations[0]
-        assert default_toleration['key'] == 'noschedule'
-        assert default_toleration['operator'] == 'Equal'
-        assert default_toleration['value'] == 'True'
-        assert default_toleration['effect'] == 'NoSchedule'
-        
+        assert default_toleration["key"] == "noschedule"
+        assert default_toleration["operator"] == "Equal"
+        assert default_toleration["value"] == "True"
+        assert default_toleration["effect"] == "NoSchedule"
+
         # Check environment toleration
         env_toleration = tolerations[1]
-        assert env_toleration['key'] == 'environments'
-        assert env_toleration['operator'] == 'Equal'
-        assert env_toleration['value'] == environment
-        assert env_toleration['effect'] == 'NoSchedule'
-        
+        assert env_toleration["key"] == "environments"
+        assert env_toleration["operator"] == "Equal"
+        assert env_toleration["value"] == environment
+        assert env_toleration["effect"] == "NoSchedule"
+
         # Test with different environment
-        values_prod = {
-            "BERDL_TOLERATIONS": "prod"
-        }
-        
+        values_prod = {"BERDL_TOLERATIONS": "prod"}
+
         result_prod = render_yaml_template(template_path, values_prod)
-        assert 'tolerations' in result_prod['spec']
-        
+        assert "tolerations" in result_prod["spec"]
+
         # Should still have both tolerations
-        tolerations_prod = result_prod['spec']['tolerations']
+        tolerations_prod = result_prod["spec"]["tolerations"]
         assert len(tolerations_prod) == 2
-        assert tolerations_prod[1]['value'] == 'prod'
-        
+        assert tolerations_prod[1]["value"] == "prod"
+
     finally:
         # Clean up temp file
         os.unlink(template_path)
