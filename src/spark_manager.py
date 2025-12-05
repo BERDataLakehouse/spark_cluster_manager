@@ -54,10 +54,11 @@ logger = logging.getLogger(__name__)
 # Get the path to the templates directory
 TEMPLATES_DIR = pathlib.Path(__file__).parent / "templates"
 
-#TODO: We should use a pydantic settings model for env vars
+# TODO: We should use a pydantic settings model for env vars
 # One model for SPARK_MASTER (prefix) env vars
 # Another model for SPARK_WORKER (prefix) env vars
 # One model for the SPARK MANAGER env vars or BERDL specific vars?
+
 
 class KubeSparkManager:
     """
@@ -79,14 +80,13 @@ class KubeSparkManager:
         "BERDL_REDIS_PORT": "Redis port",
         "BERDL_HIVE_METASTORE_URI": "Hive metastore Thrift URI",
         "BERDL_DELTALAKE_WAREHOUSE_DIRECTORY_PATH": "Delta Lake warehouse directory (S3 bucket)",
-        "SPARK_MASTER_PORT" : "Port for Spark master (used in Spark configs)",
-        "SPARK_MASTER_WEBUI_PORT" : "Web UI port for Spark master (used in Spark configs)",
+        "SPARK_MASTER_PORT": "Port for Spark master (used in Spark configs)",
+        "SPARK_MASTER_WEBUI_PORT": "Web UI port for Spark master (used in Spark configs)",
         "DEFAULT_SPARK_WORKER_CORES": "Number of CPU cores for each Spark worker",
         "DEFAULT_SPARK_WORKER_MEMORY": "Memory allocation for each Spark worker",
         "SPARK_WORKER_PORT": "Port for Spark workers local daemon",
         "SPARK_WORKER_WEBUI_PORT": "Web UI port for Spark workers",
         "BERDL_TOLERATIONS": "Environment toleration value (e.g., 'dev', 'prod')",
-
     }
 
     # SPARK_MASTER_HOST SPARK_MASTER_URL and SPARK_MODE are needed, but not taken from the env, they are in the templates
@@ -190,8 +190,6 @@ class KubeSparkManager:
             f"Initialized KubeSparkManager for user {username} in namespace {self.namespace}"
         )
 
-
-
     def create_cluster(
         self,
         worker_count: int = DEFAULT_WORKER_COUNT,
@@ -261,7 +259,9 @@ class KubeSparkManager:
             ),
             "SPARK_MASTER_MEMORY": memory,
             "SPARK_MASTER_CORES": cores,
-            "MASTER_NODE_SELECTOR_VALUES": os.environ.get("MASTER_NODE_SELECTOR_VALUES", ""),
+            "MASTER_NODE_SELECTOR_VALUES": os.environ.get(
+                "MASTER_NODE_SELECTOR_VALUES", ""
+            ),
             "BERDL_TOLERATIONS": os.environ["BERDL_TOLERATIONS"],
             "BERDL_POSTGRES_USER": os.environ["BERDL_POSTGRES_USER"],
             "BERDL_POSTGRES_PASSWORD": os.environ["BERDL_POSTGRES_PASSWORD"],
@@ -269,7 +269,9 @@ class KubeSparkManager:
             "BERDL_POSTGRES_URL": os.environ["BERDL_POSTGRES_URL"],
             "BERDL_REDIS_HOST": os.environ["BERDL_REDIS_HOST"],
             "BERDL_REDIS_PORT": os.environ["BERDL_REDIS_PORT"],
-            "BERDL_DELTALAKE_WAREHOUSE_DIRECTORY_PATH": os.environ["BERDL_DELTALAKE_WAREHOUSE_DIRECTORY_PATH"],
+            "BERDL_DELTALAKE_WAREHOUSE_DIRECTORY_PATH": os.environ[
+                "BERDL_DELTALAKE_WAREHOUSE_DIRECTORY_PATH"
+            ],
         }
 
         deployment = render_yaml_template(
@@ -280,8 +282,6 @@ class KubeSparkManager:
             deployment, self.master_name, "Spark master deployment"
         )
         return deployment
-
-
 
     def _create_master_service(self):
         """Create a Kubernetes service for the Spark master."""
@@ -317,7 +317,11 @@ class KubeSparkManager:
             worker_memory: Memory allocation per worker in GiB
         """
 
-        spark_memory_mb = float(worker_memory.replace('GiB', '').replace('Gi', '').replace('G', '')) * 1024 * 0.9
+        spark_memory_mb = (
+            float(worker_memory.replace("GiB", "").replace("Gi", "").replace("G", ""))
+            * 1024
+            * 0.9
+        )
         spark_memory_mb = f"{int(spark_memory_mb)}m"
 
         template_values = {
@@ -336,7 +340,9 @@ class KubeSparkManager:
             "SPARK_WORKER_PORT": os.environ.get("SPARK_WORKER_PORT"),
             "SPARK_WORKER_MEMORY": spark_memory_mb,
             "SPARK_WORKER_CORES": worker_cores,
-            "WORKER_NODE_SELECTOR_VALUES": os.environ.get("WORKER_NODE_SELECTOR_VALUES", ""),
+            "WORKER_NODE_SELECTOR_VALUES": os.environ.get(
+                "WORKER_NODE_SELECTOR_VALUES", ""
+            ),
             "BERDL_TOLERATIONS": os.environ["BERDL_TOLERATIONS"],
             "BERDL_POSTGRES_USER": os.environ["BERDL_POSTGRES_USER"],
             "BERDL_POSTGRES_PASSWORD": os.environ["BERDL_POSTGRES_PASSWORD"],
@@ -344,8 +350,10 @@ class KubeSparkManager:
             "BERDL_POSTGRES_URL": os.environ["BERDL_POSTGRES_URL"],
             "BERDL_REDIS_HOST": os.environ["BERDL_REDIS_HOST"],
             "BERDL_REDIS_PORT": os.environ["BERDL_REDIS_PORT"],
-            "BERDL_DELTALAKE_WAREHOUSE_DIRECTORY_PATH": os.environ["BERDL_DELTALAKE_WAREHOUSE_DIRECTORY_PATH"],
-            "BERDL_HIVE_METASTORE_URI": os.environ["BERDL_HIVE_METASTORE_URI"]
+            "BERDL_DELTALAKE_WAREHOUSE_DIRECTORY_PATH": os.environ[
+                "BERDL_DELTALAKE_WAREHOUSE_DIRECTORY_PATH"
+            ],
+            "BERDL_HIVE_METASTORE_URI": os.environ["BERDL_HIVE_METASTORE_URI"],
         }
 
         deployment = render_yaml_template(
