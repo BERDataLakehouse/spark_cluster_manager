@@ -1,4 +1,3 @@
-import os
 from unittest.mock import MagicMock, Mock
 import pytest
 from fastapi.testclient import TestClient
@@ -52,16 +51,16 @@ def mock_k8s_apis(mocker):
     mocker.patch("kubernetes.client.CoreV1Api", return_value=mock_core_api)
     mocker.patch("kubernetes.client.AppsV1Api", return_value=mock_apps_api)
 
-    return {
-        "core_api": mock_core_api,
-        "apps_api": mock_apps_api
-    }
+    return {"core_api": mock_core_api, "apps_api": mock_apps_api}
 
 
 @pytest.fixture
 def mock_deployment_status():
     """Create a mock deployment status object."""
-    def _create_status(replicas=3, ready_replicas=3, available_replicas=3, unavailable_replicas=0):
+
+    def _create_status(
+        replicas=3, ready_replicas=3, available_replicas=3, unavailable_replicas=0
+    ):
         status = Mock()
         status.replicas = replicas
         status.ready_replicas = ready_replicas
