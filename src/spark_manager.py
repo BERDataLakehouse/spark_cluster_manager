@@ -173,11 +173,11 @@ class KubeSparkManager:
         sanitized_username = sanitize_k8s_name(username)
 
         # Generate a unique identifier for this user's Spark cluster
-        self.cluster_id = f"spark-{sanitized_username}-{str(uuid.uuid4())[:8]}"
+        self.cluster_id = f"spark-{username.lower()}-{str(uuid.uuid4())[:8]}"
 
         # Service names (must be DNS-1123 compliant)
-        self.master_name = f"spark-master-{sanitized_username}"
-        self.worker_name = f"spark-worker-{sanitized_username}"
+        self.master_name = f"spark-master-{username.lower()}"
+        self.worker_name = f"spark-worker-{username.lower()}"
 
         # Initialize Kubernetes client
         k8s.config.load_incluster_config()
