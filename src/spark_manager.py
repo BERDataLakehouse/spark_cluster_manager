@@ -54,6 +54,7 @@ class KubeSparkManager:
         "DEFAULT_SPARK_WORKER_MEMORY": "Memory allocation for each Spark worker",
         "SPARK_WORKER_PORT": "Port for Spark workers local daemon",
         "SPARK_WORKER_WEBUI_PORT": "Web UI port for Spark workers",
+        "BERDL_TOLERATIONS": "Environment toleration value (e.g., 'dev', 'prod')",
 
     }
 
@@ -155,6 +156,8 @@ class KubeSparkManager:
             f"Initialized KubeSparkManager for user {username} in namespace {self.namespace}"
         )
 
+
+
     def create_cluster(
         self,
         worker_count: int = DEFAULT_WORKER_COUNT,
@@ -225,6 +228,7 @@ class KubeSparkManager:
             "SPARK_MASTER_MEMORY": memory,
             "SPARK_MASTER_CORES": cores,
             "MASTER_NODE_SELECTOR_VALUES": os.environ.get("MASTER_NODE_SELECTOR_VALUES", ""),
+            "BERDL_TOLERATIONS": os.environ["BERDL_TOLERATIONS"],
             "BERDL_POSTGRES_USER": os.environ["BERDL_POSTGRES_USER"],
             "BERDL_POSTGRES_PASSWORD": os.environ["BERDL_POSTGRES_PASSWORD"],
             "BERDL_POSTGRES_DB": os.environ["BERDL_POSTGRES_DB"],
@@ -299,6 +303,7 @@ class KubeSparkManager:
             "SPARK_WORKER_MEMORY": spark_memory_mb,
             "SPARK_WORKER_CORES": worker_cores,
             "WORKER_NODE_SELECTOR_VALUES": os.environ.get("WORKER_NODE_SELECTOR_VALUES", ""),
+            "BERDL_TOLERATIONS": os.environ["BERDL_TOLERATIONS"],
             "BERDL_POSTGRES_USER": os.environ["BERDL_POSTGRES_USER"],
             "BERDL_POSTGRES_PASSWORD": os.environ["BERDL_POSTGRES_PASSWORD"],
             "BERDL_POSTGRES_DB": os.environ["BERDL_POSTGRES_DB"],
