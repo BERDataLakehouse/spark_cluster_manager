@@ -1,5 +1,8 @@
 # CDM Spark Cluster Manager API
 
+[![Tests](https://github.com/BERDataLakehouse/spark_cluster_manager/actions/workflows/test.yml/badge.svg)](https://github.com/BERDataLakehouse/spark_cluster_manager/actions/workflows/test.yml)
+[![codecov](https://codecov.io/gh/BERDataLakehouse/spark_cluster_manager/branch/main/graph/badge.svg)](https://codecov.io/gh/BERDataLakehouse/spark_cluster_manager)
+
 A simple API service for managing Spark clusters in Kubernetes for JupyterHub users. This service acts as an intermediary between user pods and Kubernetes, providing a secure way to manage Spark clusters without requiring direct Kubernetes access.
 
 > **⚠️ Important:** This API service is intended to be deployed only within a Kubernetes environment.
