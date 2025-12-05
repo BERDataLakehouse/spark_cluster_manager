@@ -50,3 +50,12 @@ DEFAULT_SPARK_WORKER_MEMORY = "2g"
 SPARK_WORKER_PORT = "7078"
 SPARK_WORKER_WEBUI_PORT = "8081"
 BERDL_TOLERATIONS = "dev"
+
+[tool.coverage.run]
+relative_files = true
+source = ["src"]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = false
+precision = 2
