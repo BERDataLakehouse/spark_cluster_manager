@@ -257,8 +257,8 @@ class KubeSparkManager:
             "EXECUTOR_CORES": os.environ.get(
                 "EXECUTOR_CORES", self.DEFAULT_EXECUTOR_CORES
             ),
-            "SPARK_MASTER_MEMORY": memory,
-            "SPARK_MASTER_CORES": cores,
+            "MASTER_MEMORY": memory,
+            "MASTER_CORES": cores,
             "MASTER_NODE_SELECTOR_VALUES": os.environ.get(
                 "MASTER_NODE_SELECTOR_VALUES", ""
             ),

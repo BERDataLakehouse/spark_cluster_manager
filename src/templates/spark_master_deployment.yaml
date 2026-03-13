@@ -69,13 +69,10 @@ spec:
             - name: SPARK_MASTER_HOST
               value: "spark-master-{{ USERNAME_LOWER }}"
 
-# These should match SPARK_MASTER_CORES and SPARK_MASTER_MEMORY, and also be set as env vars, to let spark itself
-# Know how much resources it has available.
-
-#          resources:
-#            requests:
-#              memory: "{{ MASTER_MEMORY }}"
-#              cpu: "{{ MASTER_CORES }}"
-#            limits:
-#              memory: "{{ MASTER_MEMORY }}"
-#              cpu: "{{ MASTER_CORES }}"
+          resources:
+            requests:
+              memory: "{{ MASTER_MEMORY }}"
+              cpu: "{{ MASTER_CORES }}"
+            limits:
+              memory: "{{ MASTER_MEMORY }}"
+              cpu: "{{ MASTER_CORES }}"
