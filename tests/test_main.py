@@ -50,7 +50,9 @@ class TestAuthMiddleware:
             mock_state.get_app_state.return_value = mock_app_state_obj
 
             client = TestClient(app, raise_server_exceptions=False)
-            response = client.get("/test", headers={"Authorization": "Bearer valid_token"})
+            response = client.get(
+                "/test", headers={"Authorization": "Bearer valid_token"}
+            )
 
         assert response.status_code == 200
 
@@ -58,9 +60,9 @@ class TestAuthMiddleware:
         app = self._make_app_with_auth()
         app.add_exception_handler(
             Exception,
-            lambda req, exc: __import__("fastapi.responses", fromlist=["JSONResponse"]).JSONResponse(
-                status_code=401, content={"error": str(exc)}
-            ),
+            lambda req, exc: __import__(
+                "fastapi.responses", fromlist=["JSONResponse"]
+            ).JSONResponse(status_code=401, content={"error": str(exc)}),
         )
         client = TestClient(app, raise_server_exceptions=False)
         response = client.get("/test", headers={"Authorization": "just-a-token"})
@@ -70,9 +72,9 @@ class TestAuthMiddleware:
         app = self._make_app_with_auth()
         app.add_exception_handler(
             Exception,
-            lambda req, exc: __import__("fastapi.responses", fromlist=["JSONResponse"]).JSONResponse(
-                status_code=401, content={"error": str(exc)}
-            ),
+            lambda req, exc: __import__(
+                "fastapi.responses", fromlist=["JSONResponse"]
+            ).JSONResponse(status_code=401, content={"error": str(exc)}),
         )
         client = TestClient(app, raise_server_exceptions=False)
         response = client.get("/test", headers={"Authorization": "Basic user:pass"})
@@ -88,7 +90,9 @@ class TestLifespan:
 
         with (
             patch("src.main.app_state.build_app", new_callable=AsyncMock) as mock_build,
-            patch("src.main.app_state.destroy_app_state", new_callable=AsyncMock) as mock_destroy,
+            patch(
+                "src.main.app_state.destroy_app_state", new_callable=AsyncMock
+            ) as mock_destroy,
         ):
             async with lifespan(mock_app):
                 mock_build.assert_called_once_with(mock_app)

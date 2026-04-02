@@ -51,7 +51,9 @@ class TestKBaseHTTPBearer:
                 "src.service.http_bearer.app_state.get_request_user",
                 lambda r: None,
             )
-            with pytest.raises(MissingTokenError, match="Authorization header required"):
+            with pytest.raises(
+                MissingTokenError, match="Authorization header required"
+            ):
                 await bearer(mock_request)
 
     @pytest.mark.asyncio

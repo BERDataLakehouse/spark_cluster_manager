@@ -71,7 +71,9 @@ class TestCreateCluster:
         )
 
         with patch("src.routes.clusters.KubeSparkManager"):
-            with pytest.raises(ConfigurationLimitExceededError, match="exceeds default limits"):
+            with pytest.raises(
+                ConfigurationLimitExceededError, match="exceeds default limits"
+            ):
                 await create_cluster(config, user)
 
     @pytest.mark.asyncio

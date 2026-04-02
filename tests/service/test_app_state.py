@@ -44,7 +44,10 @@ class TestBuildApp:
         with (
             patch.dict(
                 "os.environ",
-                {"KBASE_AUTH_URL": "http://custom/auth/", "KBASE_ADMIN_ROLES": "ADMIN1,ADMIN2"},
+                {
+                    "KBASE_AUTH_URL": "http://custom/auth/",
+                    "KBASE_ADMIN_ROLES": "ADMIN1,ADMIN2",
+                },
             ),
             patch(
                 "src.service.app_state.KBaseAuth.create",

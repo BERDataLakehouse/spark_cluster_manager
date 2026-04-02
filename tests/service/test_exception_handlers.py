@@ -20,7 +20,9 @@ class TestFormatError:
     """Tests for the _format_error helper."""
 
     def test_format_error_with_all_params(self):
-        result = _format_error(400, 10050, "Configuration limit exceeded", "Too many workers")
+        result = _format_error(
+            400, 10050, "Configuration limit exceeded", "Too many workers"
+        )
         assert result.status_code == 400
         body = result.body
         assert b"Too many workers" in body
@@ -80,11 +82,20 @@ class TestUniversalErrorHandler:
     @pytest.mark.asyncio
     async def test_request_validation_error(self, mock_request):
         exc = RequestValidationError(
-            errors=[{"loc": ("body", "name"), "msg": "field required", "type": "value_error.missing"}]
+            errors=[
+                {
+                    "loc": ("body", "name"),
+                    "msg": "field required",
+                    "type": "value_error.missing",
+                }
+            ]
         )
         result = await universal_error_handler(mock_request, exc)
         assert result.status_code == 400
-        assert b"request_validation_failed" in result.body.lower() or b"30010" in result.body
+        assert (
+            b"request_validation_failed" in result.body.lower()
+            or b"30010" in result.body
+        )
 
     @pytest.mark.asyncio
     async def test_http_exception(self, mock_request):
