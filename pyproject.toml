@@ -15,7 +15,7 @@ dependencies = [
     "jinja2==3.1.6",
     "aiohttp==3.13.5",
     "cacheout==0.16.0",
-    "pydantic-settings==2.13.1",
+    "pydantic-settings==2.14.0",
 ]
 
 [dependency-groups]
